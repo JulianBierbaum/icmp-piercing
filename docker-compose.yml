@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  server:
+    build: ./server
+    container_name: server
+    networks:
+      net_server:
+        ipv4_address: 172.20.0.2
+
+  firewall:
+    build: ./firewall
+    container_name: firewall
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    privileged: true
+    networks:
+      net_client:
+        ipv4_address: 172.21.0.2
+      net_server:
+        ipv4_address: 172.20.0.3
+
+  client:
+    build: ./client
+    container_name: client
+    depends_on:
+      - firewall
+    networks:
+      net_client:
+        ipv4_address: 172.21.0.3
+
+networks:
+  net_client:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+
+  net_server:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
