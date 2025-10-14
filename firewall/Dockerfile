@@ -1,8 +1,12 @@
-FROM alpine:latest
+FROM ubuntu:latest
 
-RUN apk add --no-cache iptables iproute2 bash
+RUN apt-get update && apt-get install -y ufw iproute2
 
 COPY entrypoint.sh /entrypoint.sh
+
+RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
 RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["/entrypoint.sh"]
